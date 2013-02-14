@@ -63,3 +63,57 @@ class Container(object):
     @property
     def exists(self):
         return self.attrs["exists"]
+    
+    def objects(self):
+        objs, ret = [], []
+        def _fetch_page(marker=None):
+            path = self.name
+            params = dict(format="json")
+            if marker:
+                params["marker"] = marker
+            response = requests.get(**self.storage._request_kwargs(path, params=params))
+            response.raise_for_status()
+            return response.json()
+        page = _fetch_page()
+        while page:
+            objs.extend(page)
+            # if number of objects returned is less than maximum page length
+            # don't bother asking for pages (let's hope Rackspace never lies!)
+            if len(page) < 10000:
+                break
+            page = _fetch_page(marker=page[-1]["name"])
+        for o in objs:
+            attrs = dict(
+                exists=True,
+                bytes=o["bytes"],
+                hash=o["hash"],
+            )
+            ret.append(Object(self, o["name"], attrs=attrs))
+        return ret
+
+
+class Object(object):
+    
+    def __init__(self, container, name, **kwargs):
+        self.container = container
+        self.name = name
+        self.storage = self.container.storage
+        if "attrs" in kwargs:
+            self.__dict__.setdefault("memo", {})[("attrs", ())] = kwargs["attrs"]
+    
+    @property
+    @memoize
+    def attrs(self):
+        ret = dict(exists=True)
+        path = "{}/{}".format(self.container.name, self.name)
+        response = requests.head(**self.storage._request_kwargs(path))
+        if response.ok:
+            ret.update({
+                "bytes": int(response.headers["content-length"]),
+                "hash": response.headers["etag"].decode("ascii"),
+            })
+        elif response.status_code == requests.codes.not_found:
+            ret["exists"] = False
+        else:
+            response.raise_for_status()
+        return ret
