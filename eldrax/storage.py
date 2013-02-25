@@ -117,3 +117,9 @@ class Object(object):
         else:
             response.raise_for_status()
         return ret
+    
+    def delete(self):
+        path = "{}/{}".format(self.container.name, self.name)
+        response = requests.delete(**self.storage._request_kwargs(path))
+        if not response.ok and response.status_code != requests.codes.not_found:
+            reponse.raise_for_status()
