@@ -30,6 +30,11 @@ class Storage(ApiBase):
         if not c.exists:
             raise KeyError(name)
         return c
+    
+    def containers(self):
+        response = requests.get(**self._request_kwargs(""))
+        response.raise_for_status()
+        return [c for c in response.content.split("\n") if c]
 
 
 class Container(object):
