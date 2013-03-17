@@ -125,6 +125,19 @@ class Object(object):
             response.raise_for_status()
         return ret
     
+    def _get_file_response(self):
+        path = "{}/{}".format(self.container.name, self.name)
+        response = requests.get(**self.storage._request_kwargs(path))
+        response.raise_for_status()
+        return response
+    
+    def iter_content(self, *args, **kwargs):
+        return self._get_file_response().iter_content(*args, **kwargs)
+    
+    @property
+    def content(self):
+        return self._get_file_response().content
+    
     def save(self, data, delete_on=None):
         path = "{}/{}".format(self.container.name, self.name)
         headers = {}
