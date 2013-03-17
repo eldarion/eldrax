@@ -1,3 +1,5 @@
+import time
+
 import requests
 
 from .base import ApiBase
@@ -117,6 +119,14 @@ class Object(object):
         else:
             response.raise_for_status()
         return ret
+    
+    def save(self, data, delete_on=None):
+        path = "{}/{}".format(self.container.name, self.name)
+        headers = {}
+        if delete_on is not None:
+            headers["X-Delete-At"] = str(int(time.mktime(delete_on.timetuple())))
+        response = requests.put(**self.storage._request_kwargs(path, headers=headers, data=data))
+        response.raise_for_status()
     
     def delete(self):
         path = "{}/{}".format(self.container.name, self.name)
