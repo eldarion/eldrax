@@ -32,7 +32,7 @@ class ApiBase(object):
                 }
             }
         }
-        url = self.IDENTITY_URLS["ORD"]
+        url = self.IDENTITY_URLS[self.region]
         data = json.dumps(payload)
         response = requests.post(url, headers=headers, data=data)
         response.raise_for_status()

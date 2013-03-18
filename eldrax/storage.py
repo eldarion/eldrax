@@ -32,9 +32,12 @@ class Storage(ApiBase):
         return c
     
     def containers(self):
+        L = []
         response = requests.get(**self._request_kwargs(""))
         response.raise_for_status()
-        return [c for c in response.content.split("\n") if c]
+        for line in response.iter_lines():
+            L.append(Container(self, line))
+        return L
 
 
 class Container(object):
