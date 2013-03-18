@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="eldrax",
-    version="0.1a1.dev1",
+    version="0.1a1",
     packages=find_packages(),
     zip_safe=False,
     install_requires=[
