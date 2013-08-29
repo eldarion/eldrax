@@ -10,6 +10,8 @@ class ApiBase(object):
     IDENTITY_URLS = {
         "ORD": "https://identity.api.rackspacecloud.com/v2.0/tokens",
         "DFW": "https://identity.api.rackspacecloud.com/v2.0/tokens",
+        "IAD": "https://identity.api.rackspacecloud.com/v2.0/tokens",
+        "SYD": "https://identity.api.rackspacecloud.com/v2.0/tokens",
         "LON": "https://lon.identity.api.rackspacecloud.com/v2.0/tokens",
     }
     
