@@ -9,4 +9,5 @@ setup(
     install_requires=[
         "requests==1.2.3",
     ],
+    description="Python library for interacting with Rackspace services",
 )
